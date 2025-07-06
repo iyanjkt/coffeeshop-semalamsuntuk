@@ -708,7 +708,7 @@ footer .credit a {
 /* Tablet */
 @media (max-width: 768px) {
     html {
-        font-size: 60%;
+        font-size: 65%;
     }
 
     .hero {
@@ -771,7 +771,6 @@ footer .credit a {
 
     .navbar .navbar-nav a:hover::after {
         transform: scaleX(0.2);
-
     }
 
     .about .about-img img {
@@ -801,17 +800,23 @@ footer .credit a {
     }
 
     .hero {
-        background-size: 230%;
-        background-position: center;
+        background-size: 290%;
+        background-position: 52%;
         background-position-y: 80%;
         background-repeat: no-repeat;
         min-height: 100vh;
+        mask-image: linear-gradient(rgba(0, 0, 0, 1)50%, rgba(0, 0, 0, 0));
     }
 
     .hero .mask-overlay {
-        mask-size: 240%;
-        mask-position: center;
+        mask-size: 290%;
+        -webkit-mask-position-x: 52%;
         -webkit-mask-position-y: 80%;
+    }
+
+    .hero .content {
+        position: fixed;
+        top: 13%;
     }
 
 
