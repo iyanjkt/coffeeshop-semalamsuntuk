@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="img/coffe-to-go-svgrepo-com.svg"
+      type="image/x-icon"
+    />
     <title>Kopi Semalam Suntuk</title>
     <!-- Feather Icons -->
     <script src="https://unpkg.com/feather-icons"></script>
@@ -17,10 +22,16 @@
 
     <!-- CSS style -->
     <link rel="stylesheet" href="style.css" />
+
+    <!-- Alpine JS -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
   </head>
   <body>
     <!-- Navbar start -->
-    <nav class="navbar">
+    <nav class="navbar" x-data>
       <a href="#" class="navbar-logo">semalam<span>suntuk</span>.</a>
       <div class="navbar-nav">
         <a href="#home">Home</a>
@@ -31,7 +42,14 @@
       </div>
       <div class="navbar-extra">
         <button id="search-btn"><i data-feather="search"></i></button>
-        <button id="shopping-cart-btn"><i data-feather="shopping-cart"></i></button>
+        <button id="shopping-cart-btn">
+          <i data-feather="shopping-cart"></i>
+          <span
+            class="qty-badge"
+            x-show="$store.cart.quantity > 0"
+            x-text="$store.cart.quantity"
+          ></span>
+        </button>
         <button id="hamburger-menu"><i data-feather="menu"></i></button>
       </div>
 
@@ -44,21 +62,54 @@
 
       <!-- Shopping Cart Start -->
       <div class="shopping-cart">
-        <div class="cart-item">
-          <img src="img/product-1.jpg" alt="Product1" />
-          <div class="item-detail">
-            <h3>Robusta Sidikalang</h3>
-            <div class="item-price">IDR 30K</div>
+        <template x-for="(item,index) in $store.cart.items" x-key="index">
+          <div class="cart-item">
+            <img :src="`img/product/${item.img}`" alt="item.name" />
+            <div class="item-detail">
+              <h3 x-text="item.name"></h3>
+              <div class="item-price">
+                <span x-text="rupiah(item.price)"></span> &times;
+                <button id="remove" @click="$store.cart.remove(item.id)">
+                  <svg class="feather">
+                    <use href="img/feather-sprite.svg#chevron-down" />
+                  </svg>
+                </button>
+                <span x-text="item.quantity"></span>
+                <button id="add" @click="$store.cart.add(item)">
+                  <svg class="feather">
+                    <use href="img/feather-sprite.svg#chevron-up" />
+                  </svg>
+                </button>
+                &equals;
+                <span x-text="rupiah(item.total)"></span>
+              </div>
+            </div>
           </div>
-          <i data-feather="trash-2" class="remove-item"></i>
-        </div>
-        <div class="cart-item">
-          <img src="img/product-1.jpg" alt="Product1" />
-          <div class="item-detail">
-            <h3>Robusta Sidikalang</h3>
-            <div class="item-price">IDR 30K</div>
-          </div>
-          <i data-feather="trash-2" class="remove-item"></i>
+        </template>
+        <h4 x-show="!$store.cart.items.length" style="margin-top: 1rem">Cart is Empty</h4>
+        <h4 x-show="$store.cart.items.length">
+          Total : <span x-text="rupiah($store.cart.total)"></span>
+        </h4>
+        <div class="form-container" x-show="$store.cart.items.length">
+          <form action="" id="checkoutForm">
+            <h5>Customer Detail</h5>
+
+            <label for="name">
+              <span>Name</span>
+              <input type="text" name="name" id="name" />
+            </label>
+            <label for="email">
+              <span>Email</span>
+              <input type="email" name="email" id="email" />
+            </label>
+            <label for="phone">
+              <span>Phone</span>
+              <input type="number" name="phone" id="phone" autocomplete="off" />
+            </label>
+            <button class="checkout-button" type="submit" id="checkout-button">
+              Checkout
+            </button>
+          </form>
         </div>
       </div>
 
@@ -143,7 +194,7 @@
     <!-- Menu Section End -->
 
     <!-- Product Section Start -->
-    <section class="products" id="products">
+    <section class="products" id="products" x-data="products">
       <h2><span>Produk</span> Unggulan Kami</h2>
       <p>
         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ad soluta architecto
@@ -151,98 +202,83 @@
       </p>
 
       <div class="row">
-        <div class="product-card">
-          <div class="product-image">
-            <img src="img/product-1.jpg" alt="product-1" />
-            <h3><i data-feather="eye"></i></h3>
-            <span>See Details</span>
-          </div>
-          <div class="product-content">
-            <h3>Arabica Gayo</h3>
-            <div class="product-stars">
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i data-feather="star"></i>
+        <template x-for="(item, index) in items" :key="index">
+          <div class="product-card" x-data="productCard">
+            <div class="product-image" @click="openModal()">
+              <img :src="`img/product/${item.img}`" alt="item.name" />
+              <h3>
+                <svg class="feather">
+                  <use href="img/feather-sprite.svg#eye" />
+                </svg>
+              </h3>
+              <span>See Details</span>
             </div>
-            <div class="product-price">IDR 30K <span>IDR 50K</span></div>
-            <div class="product-icons">
-              <button class="add-chart">
-                <i data-feather="shopping-cart"></i> <span>Add to cart</span>
-              </button>
+            <div class="product-content">
+              <h3 x-text="item.name"></h3>
+              <div class="product-stars">
+                <template x-for="i in 5" :key="i">
+                  <svg :class="{'feather full': i <= item.star, 'feather': i> item.star}">
+                    <use href="img/feather-sprite.svg#star" /></svg
+                ></template>
+              </div>
+              <div class="product-price" x-text="rupiah(item.price)"></div>
+              <div class="product-icons">
+                <button class="add-chart" @click="$store.cart.add(item)">
+                  <svg class="feather">
+                    <use href="img/feather-sprite.svg#shopping-cart" />
+                  </svg>
+                  <span>Add to cart</span>
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="product-card">
-          <div class="product-image">
-            <img src="img/product-1.jpg" alt="product-1" />
-            <h3><i data-feather="eye"></i></h3>
-            <span>See Details</span>
-          </div>
-          <div class="product-content">
-            <h3>Robusta Toraja</h3>
-            <div class="product-stars">
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i data-feather="star"></i>
+
+            <!-- Modal Box Start -->
+            <!-- <template x-if="showDetailModal"> -->
+            <div
+              class="modal-overlay"
+              x-show="showDetailModal"
+              x-bind:class="{ 'closing': closingModal }"
+              @click.self="closeModal()"
+            >
+              <div class="modal-container">
+                <button class="modal-close" @click="closeModal()">
+                  <svg>
+                    <use href="img/feather-sprite.svg#x" />
+                  </svg>
+                </button>
+                <div class="modal-content-inner">
+                  <img :src="`img/product/${item.img}`" :alt="item.name" />
+                  <div class="product-content">
+                    <h3 x-text="item.name"></h3>
+                    <p>
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Voluptatibus ea minus magni dolorem deleniti omnis eum dicta
+                      voluptate quo eligendi modi, culpa cumque delectus enim?
+                    </p>
+                    <div class="product-stars">
+                      <template x-for="i in 5" :key="i">
+                        <svg
+                          :class="{'feather full': i <= item.star, 'feather': i> item.star}"
+                        >
+                          <use href="img/feather-sprite.svg#star" /></svg
+                      ></template>
+                    </div>
+                    <div class="product-price" x-text="rupiah(item.price)"></div>
+                    <div class="add-chart-modal">
+                      <button class="add-chart" @click="$store.cart.add(item)">
+                        <svg class="feather">
+                          <use href="img/feather-sprite.svg#shopping-cart" /></svg
+                        ><span>Add to cart</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="product-price">IDR 30K <span>IDR 50K</span></div>
-            <div class="product-icons">
-              <button class="add-chart">
-                <i data-feather="shopping-cart"></i> <span>Add to cart</span>
-              </button>
-            </div>
+            <!-- </template> -->
+            <!-- Modal Box End -->
           </div>
-        </div>
-        <div class="product-card">
-          <div class="product-image">
-            <img src="img/product-1.jpg" alt="product-1" />
-            <h3><i data-feather="eye"></i></h3>
-            <span>See Details</span>
-          </div>
-          <div class="product-content">
-            <h3>Arabica Flores</h3>
-            <div class="product-stars">
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i data-feather="star"></i>
-            </div>
-            <div class="product-price">IDR 30K <span>IDR 50K</span></div>
-            <div class="product-icons">
-              <button class="add-chart">
-                <i data-feather="shopping-cart"></i> <span>Add to cart</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="product-card">
-          <div class="product-image">
-            <img src="img/product-1.jpg" alt="product-1" />
-            <h3><i data-feather="eye"></i></h3>
-            <span>See Details</span>
-          </div>
-          <div class="product-content">
-            <h3>Robusta Sidikalang</h3>
-            <div class="product-stars">
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i data-feather="star"></i>
-            </div>
-            <div class="product-price">IDR 30K <span>IDR 50K</span></div>
-            <div class="product-icons">
-              <button class="add-chart">
-                <i data-feather="shopping-cart"></i> <span>Add to cart</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        </template>
       </div>
     </section>
     <!-- Product Section End -->
@@ -254,7 +290,7 @@
       <div class="row">
         <iframe
           class="map"
-          src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d495.7437063830732!2d106.876765!3d-6.270352!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f32e099cb437%3A0x884ea609cc640c6a!2sRUTEN%3A%20Ruang%20Tengah%20Warung%20Kopi!5e0!3m2!1sid!2sid!4v1751782151440!5m2!1sid!2sid"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d991.4874135274544!2d106.8761200285573!3d-6.270351599605744!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f32e099cb437%3A0x884ea609cc640c6a!2sRUTEN%3A%20Ruang%20Tengah%20Warung%20Kopi!5e0!3m2!1sid!2sid!4v1751992131246!5m2!1sid!2sid"
           height="400"
           style="border: 0"
           allowfullscreen=""
@@ -301,42 +337,11 @@
     </footer>
     <!-- Footer End -->
 
-    <!-- Modal Box Start -->]
-    <div class="modal" id="item-detail-modal">
-      <div class="modal-container">
-        <button class="modal-close"><i data-feather="x" class="close-icon"></i></button>
-        <div class="modal-content">
-          <img src="img/product-1.jpg" alt="product-1" />
-          <div class="product-content">
-            <h3>Arabica Gayo</h3>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus ea
-              minus magni dolorem deleniti omnis eum dicta voluptate quo eligendi modi,
-              culpa cumque delectus enim?
-            </p>
-            <div class="product-stars">
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i class="full-star" data-feather="star"></i>
-              <i data-feather="star"></i>
-            </div>
-            <div class="product-price">IDR 30K <span>IDR 50K</span></div>
-            <div class="add-chart-modal">
-              <button class="add-chart">
-                <i data-feather="shopping-cart"></i> <span>Add to cart</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Modal Box End -->
-
+    <!-- App -->
+    <script src="src/app.js"></script>
     <!-- Feather Icons -->
     <script>
       feather.replace();
     </script>
-    <script src="app.js"></script>
   </body>
 </html>

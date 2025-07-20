@@ -23,6 +23,15 @@ body {
     color: #fff;
 }
 
+.feather {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
 
 /* Navbar */
 .navbar {
@@ -83,6 +92,24 @@ body {
 .navbar .navbar-extra button:hover {
     color: var(--primary);
     cursor: pointer;
+}
+
+.navbar-extra #shopping-cart-btn {
+    position: relative;
+}
+
+.navbar-extra #shopping-cart-btn .qty-badge {
+    display: flex;
+    width: 15px;
+    height: 15px;
+    background-color: red;
+    font-size: 0.6rem;
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: -6px;
+    right: -10px;
 }
 
 #hamburger-menu {
@@ -157,22 +184,104 @@ body {
 
 .shopping-cart h3 {
     font-size: 1.4rem;
-    padding-bottom: 0.2rem;
 }
 
 .shopping-cart .item-price {
     font-size: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 5px;
+}
+
+.shopping-cart .item-price #add,
+.shopping-cart .item-price #remove {
+    display: flex;
+    padding: 0px 3px;
+    cursor: pointer;
+    margin: 0px 3px;
+    background-color: #745638;
+    border: 0.5px solid #745638;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    align-items: center;
+}
+
+.shopping-cart .item-price #add:hover,
+.shopping-cart .item-price #remove:hover {
+    background-color: #ab7f54;
+}
+
+.shopping-cart .item-price svg {
+    width: 11px;
+    height: 11px;
+
 }
 
 .shopping-cart img {
-    height: 5rem;
+    height: 4rem;
     border-radius: 50%;
 }
 
-.shopping-cart .remove-item {
-    position: absolute;
-    right: 10%;
-    width: 22px;
+.shopping-cart h4 {
+    font-size: 1.6rem;
+    text-align: center;
+}
+
+/* Checkout Form */
+.form-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    border-top: 1px dashed black;
+    margin-top: 1rem;
+    padding: 1rem;
+}
+
+.form-container h5 {
+    text-align: center;
+    font-size: 1rem;
+}
+
+.form-container form {
+    width: 100%;
+    text-align: center;
+}
+
+.form-container label {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 1rem 0;
+}
+
+.form-container span {
+    text-align: right;
+}
+
+.form-container input {
+    background-color: #fff;
+    padding: 5px;
+    font-size: 1rem;
+    width: 70%;
+}
+
+.form-container .checkout-button {
+    padding: 6px 14px;
+    background-color: royalblue;
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 20px;
+    margin: 1rem;
+    cursor: pointer;
+}
+
+.form-container .checkout-button.disabled {
+    background-color: #999;
+    cursor: not-allowed;
 }
 
 /* Hero Section */
@@ -212,10 +321,8 @@ body {
 .hero .content {
     padding: 1.4rem 7%;
     width: 100%;
-    /* text-align: center; */
     position: fixed;
     top: 20%;
-    /* max-width: 60rem; */
 }
 
 .hero .content h1 {
@@ -336,7 +443,7 @@ body {
 
 .menu p,
 .contact p,
-.products p {
+.products>p {
     text-align: center;
     max-width: 60%;
     margin: 0rem auto;
@@ -355,6 +462,7 @@ body {
 
 .menu .row .menu-card {
     text-align: center;
+    font-size: 1.3rem;
 
 }
 
@@ -395,7 +503,6 @@ body {
     transform: translate(-50%, -50%);
     width: 4rem;
     height: 4rem;
-    color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -442,25 +549,20 @@ body {
     font-size: 2rem;
 }
 
-.products .product-stars svg {
+.products .product-stars .feather {
     color: var(--primary);
     width: 1.7rem;
     height: 1.7rem;
 }
 
-.products .product-stars .full-star {
+.products .product-stars .full {
     fill: var(--primary);
 }
+
 
 .products .product-price {
     font-size: 1.2rem;
     font-weight: bold;
-}
-
-.products .product-price span {
-    text-decoration: line-through;
-    font-size: 1rem;
-    font-weight: normal;
 }
 
 .products .product-icons {
@@ -475,6 +577,7 @@ body {
     gap: 10px;
     margin-top: 1.4rem;
     padding: 1rem 2rem;
+    font-size: 1.2rem;
     border-radius: 1rem;
     background-color: var(--primary);
     color: #fff;
@@ -483,7 +586,7 @@ body {
 
 .product-icons .add-chart:hover {
     cursor: pointer;
-    background-color: #513c28;
+    background-color: #daa573;
 }
 
 /* Contact Section */
@@ -580,8 +683,8 @@ footer .credit a {
     font-weight: 400;
 }
 
-.modal {
-    display: none;
+.modal-overlay {
+    display: flex;
     position: fixed;
     z-index: 9999;
     left: 0;
@@ -592,84 +695,98 @@ footer .credit a {
     background-color: rgba(0, 0, 0, 0.7);
 }
 
+
 .modal-container {
     position: relative;
     height: max-content;
     width: 90%;
     background-color: var(--primary);
     color: var(--bg);
-    margin: 15% auto;
+    margin: 10% auto;
     padding: 2rem;
     animation: animateModal 0.5s;
 }
 
-.modal.closing .modal-container {
+.modal-overlay.closing .modal-container {
     animation: slideOutUp 0.4s;
     /* Style animasi modal menutup ke atas */
 }
 
-.modal-container .modal-close {
+.modal-container .modal-close svg {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
-    background-color: transparent;
+    width: 3rem;
+    height: 3rem;
+    stroke: var(--bg);
 }
 
 .modal-container .modal-close:hover {
     cursor: pointer;
 }
 
-.modal-content {
+.modal-content-inner {
     display: flex;
     flex-wrap: nowrap;
 }
 
-.modal-content img {
+.modal-content-inner img {
     height: 25rem;
     margin-right: 2rem;
 }
 
-.modal-content h3 {
+.modal-content-inner .product-content h3 {
     font-size: 1.6rem;
+    text-align: left;
+
 }
 
-.modal-content p {
+.modal-content-inner .product-content p {
     font-size: 1.2rem;
-    line-height: 1.8rem;
+    text-shadow: 0px 1px 2px rgba(255, 255, 255, 0.5);
+    line-height: 1.4rem;
     margin: 1.2rem 0;
+    text-align: left;
+    width: 100%;
 }
 
-.modal-content .full-star {
+.modal-content-inner .product-stars {
+    text-align: left;
+}
+
+.modal-content-inner .product-stars .feather {
+    fill: none;
+    stroke: var(--bg);
+}
+
+.modal-content-inner .product-stars .full {
     fill: var(--bg);
 }
 
-.modal-content .product-price {
-    font-size: 1.2rem;
+.modal-content-inner .product-price {
+    font-size: 1.3rem;
     font-weight: bold;
+    text-align: left;
 }
 
-.modal-content .product-price span {
-    font-size: 1rem;
-    font-weight: normal;
-    text-decoration: line-through;
-}
 
-.modal-content .add-chart {
+.modal-content-inner .add-chart-modal .add-chart {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
     margin-top: 1.4rem;
     padding: 1rem 2rem;
+    font-size: 1.3rem;
     border-radius: 1rem;
     background-color: #513c28;
     color: #fff;
     box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.6);
 }
 
-.modal-content .add-chart:hover {
+.modal-content-inner .add-chart-modal .add-chart:hover {
     cursor: pointer;
-    background-color: #38291b;
+    background-color: #745638;
 }
 
 /* Modal Animation */
@@ -742,7 +859,7 @@ footer .credit a {
         position: absolute;
         top: 100%;
         right: -100%;
-        background-color: var(--primary);
+        background: var(--primary);
         width: 20rem;
         height: 100vh;
         transition: 0.3s;
@@ -833,7 +950,7 @@ footer .credit a {
         margin-top: 2rem;
     }
 
-    .modal-content {
+    .modal-content-inner {
         flex-wrap: wrap;
         justify-content: center;
         gap: 2rem;
