@@ -598,15 +598,15 @@ body {
 }
 
 .contact .row .map {
-    flex: 1 1 45rem;
+    flex: 1 1 40rem;
     width: 100%;
-    margin: 2rem 0 2rem 2rem;
+    padding: 2rem 2rem;
     object-fit: cover;
 }
 
 .contact .row form {
-    flex: 1 1 45rem;
-    padding: 5rem 2rem;
+    flex: 1 1 40rem;
+    padding: 3rem 2rem;
     text-align: center;
 }
 
